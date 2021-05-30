@@ -11,4 +11,6 @@ object TodoTable: Table() {
         .references(UserTable.id)
     val todo:Column<String> = varchar("todo",512)
     val done:Column<Boolean> = bool("done")
+
+    override val primaryKey: PrimaryKey = PrimaryKey(id)
 }
