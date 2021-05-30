@@ -64,17 +64,119 @@ fun Route.todos(
         }
     }
 
-    get<TodoRoute>{
+    get<TodoRoute> {
         val user = call.sessions.get<MySession>()?.let {
             userDb.findUser(it.userId)
         }
-        if(user == null){
-            call.respond(status = HttpStatusCode.BadRequest,
-                "problem getting user")
+        if (user == null) {
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                "problem getting user"
+            )
         }
         try {
             val todos = user?.id?.let { it1 -> todoDb.getAllTodo(it1) }
-            call.respond("$todos")
+            if (todos?.isNotEmpty() == true) {
+                call.respond(todos)
+            }
+        } catch (e: Throwable) {
+            application.log.error("Failed to add todo", e)
+            call.respond(HttpStatusCode.BadRequest, "Problems Saving Todo")
+        }
+    }
+
+    delete("$API_VERSION/todos/{id}") {
+        val id = call.parameters["id"] ?: return@delete call.respondText(
+            "invalid id"
+        )
+
+        val user = call.sessions.get<MySession>()?.let {
+            userDb.findUser(it.userId)
+        }
+
+        if (user == null) {
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                "problem getting user"
+            )
+        }
+
+        try {
+            val allTodos = user?.id?.let { it1 -> todoDb.getAllTodo(it1) }
+            allTodos?.forEach {
+                if (it.id == id.toInt()) {
+                    todoDb.deleteTodoById(id.toInt())
+                    call.respond(it)
+                } else {
+                    call.respondText("problem deleting todo..")
+                }
+            }
+        } catch (e: Throwable) {
+            application.log.error("Failed to add todo", e)
+            call.respond(HttpStatusCode.BadRequest, "Problems Saving Todo")
+        }
+    }
+
+    delete<TodoRoute> {
+        val user = call.sessions.get<MySession>()?.let {
+            userDb.findUser(it.userId)
+        }
+
+        if (user == null) {
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                "problem getting user"
+            )
+        }
+
+        try {
+            val isDeleted = user?.id?.let { it1 -> todoDb.deleteAllTodoByUserId(it1) }
+
+            if (isDeleted != null) {
+                if (isDeleted > 0)
+                    call.respond("All todos deleted successful.. ")
+                else
+                    call.respond("something went wrong..")
+
+            }
+        } catch (e: Throwable) {
+            application.log.error("Failed to add todo", e)
+            call.respond(HttpStatusCode.BadRequest, "Problems Saving Todo")
+        }
+    }
+
+    put("$API_VERSION/todos/{id}") {
+        val id = call.parameters["id"]
+        val user = call.sessions.get<MySession>()?.let {
+            userDb.findUser(it.userId)
+        }
+
+        val parameter = call.receive<Parameters>()
+
+        val todo = parameter["todo"] ?: return@put call.respondText(
+            "missing field",
+            status = HttpStatusCode.Unauthorized
+        )
+
+        val done = parameter["todo"] ?: "false"
+
+        if (user == null) {
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                "problem getting user"
+            )
+        }
+
+        try {
+            val allTodos = user?.id?.let { it1 -> todoDb.getAllTodo(it1) }
+            allTodos?.forEach {
+                if(it.id == id?.toInt()){
+                    todoDb.updateTodo(id.toInt(),todo,done.toBoolean())
+                    call.respondText("updated successfully...")
+                }else{
+                    call.respond("something went wrong..")
+                }
+            }
         } catch (e: Throwable) {
             application.log.error("Failed to add todo", e)
             call.respond(HttpStatusCode.BadRequest, "Problems Saving Todo")

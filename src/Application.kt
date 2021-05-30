@@ -62,7 +62,7 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        users(userDb,jwt,hashFunction)
+        users(userDb,todoDb,jwt,hashFunction)
         todos(todoDb,userDb)
     }
 }

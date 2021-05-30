@@ -23,8 +23,8 @@ object DatabaseFactory {
 
     private fun hikari():HikariDataSource {
         val config = HikariConfig()
-        config.driverClassName = System.getenv("JDBC_DRIVER")
-        config.jdbcUrl = System.getenv("JDBC_DATABASE_URL")
+        config.driverClassName = System.getenv("JDBC_DRIVER_2")
+        config.jdbcUrl = System.getenv("JDBC_DATABASE_URL_2")
         config.maximumPoolSize = 3
         config.isAutoCommit = true
         config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"

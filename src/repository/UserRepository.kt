@@ -6,9 +6,7 @@ import com.codingwithjks.data.model.Todo
 import com.codingwithjks.data.model.User
 import com.codingwithjks.data.table.TodoTable
 import com.codingwithjks.data.table.UserTable
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 
 class UserRepository : UserDao {
@@ -40,6 +38,30 @@ class UserRepository : UserDao {
                 .singleOrNull()
         }
 
+    override suspend fun deleteUser(userId: Int): Int =
+        DatabaseFactory.dbQuery {
+            UserTable.deleteWhere { UserTable.id.eq(userId) }
+        }
+
+    override suspend fun updateAllData(id: Int, name: String, email: String, password: String): Int =
+        DatabaseFactory.dbQuery {
+            UserTable.update({ UserTable.id.eq(id) }) { user ->
+                user[UserTable.name] = name
+                user[UserTable.email] = email
+                user[UserTable.password] = password
+            }
+        }
+
+    override suspend fun updateAnyData(id: Int, name: String, email: String, password: String): Int =
+        DatabaseFactory.dbQuery {
+            UserTable.update({ UserTable.id.eq(id) }) { user ->
+                user[UserTable.name] = name
+                user[UserTable.email] = email
+                user[UserTable.password] = password
+            }
+        }
+
+
     private fun rowToResult(row: ResultRow?): User? {
         if (row == null)
             return null
@@ -50,8 +72,6 @@ class UserRepository : UserDao {
             name = row[UserTable.name]
         )
     }
-
-
 
 
 }
