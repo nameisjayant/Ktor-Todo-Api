@@ -4,8 +4,10 @@ This is a simple Rest Api for todo application , where users do signup, login an
 
 #Main Features
 
+<div>
 1). Authorization
 2). Authentication token
 3). Sign up and login feature
 4). User can create , update , delete their account
 5). User can also add todos , where he/she can update , delete todos
+  </div>
