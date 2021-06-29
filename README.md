@@ -9,9 +9,9 @@ This is a simple Rest Api for todo application , where users do signup, login an
 2). Authentication token
 3). Sign up and login feature
 4). User can create , update , delete their account
-5). User can also add todos , where he/she can update , delete todos
+5). User can also add todos , where he/she can update , delete todos... 
   </div>
 
 if you wants to deploy ktor app on heroku .. please read this medium blog on ktor app deployment............... 
-
+.......... 
 https://nameisjayant.medium.com/deploy-ktor-app-with-postgresql-on-heroku-ff35df4b5c55
